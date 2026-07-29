@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REDLINE · Player sentiment intelligence · Gemmy Nguyen</title>
+<meta name="description" content="REDLINE: a Power BI report decomposing a 0.74-star sentiment decline across three mobile racing games into its specific causes, from 12,640 classified Google Play reviews.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <p class="name"><a href="index.html">Giao Nguyen (Gemmy Nguyen)</a></p>
+  <nav>
+    <a href="index.html#work">Work</a>
+    <a href="index.html#about">About</a>
+    <a href="https://www.linkedin.com/in/giao-nguyen-541944178/"
+       target="_blank" 
+       rel="noopener noreferrer">LinkedIn</a>
+    <a href="https://github.com/GemmyNguyen"
+       target="_blank" 
+       rel="noopener noreferrer">GitHub</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <div class="col">
+    <p class="eyebrow" style="margin-top:3rem;">Project &middot; REDLINE</p>
+    <h1 style="margin-top:0;">Player sentiment slipped 0.74&#9733; in four years. Which part was real?</h1>
+    <p class="lede">
+      Three mobile racing games, 12,640 classified Google Play reviews, and one question a
+      trend line can't answer: when a rating falls, is the product getting worse or are the
+      complainers just getting louder?
+    </p>
+  </div>
+
+  <dl class="spec">
+    <dt>Report</dt>   <dd>REDLINE &mdash; sentiment intelligence, five pages</dd>
+    <dt>Role</dt>     <dd>Sole build &mdash; scraping, modelling, classification, report</dd>
+    <dt>Source</dt>   <dd>Google Play reviews, Vietnam, public</dd>
+    <dt>Sample</dt>   <dd>12,640 reviews &mdash; stratified by month &times; score</dd>
+    <dt>Period</dt>   <dd>Jan 2021 &ndash; Aug 2025</dd>
+    <dt>Language</dt> <dd>Vietnamese</dd>
+    <dt>Method</dt>   <dd>SetFit few-shot classification, multilingual base, 12 themes</dd>
+    <dt>Stack</dt>    <dd>Python, Power BI, DAX, Deneb/Vega</dd>
+    <dt>Titles</dt>   <dd>Asphalt Legends Unite &middot; Need for Speed No Limits &middot; ZingSpeed Mobile</dd>
+    <dt>Code</dt>     <dd>Fully open &mdash; notebook, data and .pbix on GitHub</dd>
+  </dl>
+
+  <h2>The report</h2>
+
+  <div class="report">
+    <iframe title="REDLINE — player sentiment intelligence"
+            src="https://app.powerbi.com/view?r=eyJrIjoiN2VkMjA2Y2QtNjJlMy00MThjLTgzZWMtYWI3ZTBiNmJhNTRmIiwidCI6IjIyYWU5ZTc4LTMwYTctNGYyZC04MDNiLWEwZjY2OTE4MTg0ZSIsImMiOjEwfQ%3D%3D"
+            allowfullscreen></iframe>
+  </div>
+  <p class="caption">
+    Interactive — start on Overview, then follow the tabs.
+    <a href="https://app.powerbi.com/view?r=eyJrIjoiN2VkMjA2Y2QtNjJlMy00MThjLTgzZWMtYWI3ZTBiNmJhNTRmIiwidCI6IjIyYWU5ZTc4LTMwYTctNGYyZC04MDNiLWEwZjY2OTE4MTg0ZSIsImMiOjEwfQ%3D%3D"
+       target="_blank" 
+       rel="noopener noreferrer">Open full screen &rarr;</a>
+    <a href="assets/REDLINE.pdf"
+       target="_blank" 
+       rel="noopener noreferrer">Download as PDF</a>
+  </p>
+
+  <div class="col">
+
+    <h2>The question</h2>
+    <p>
+      A store rating tells you a game is sliding. It won't tell you why, and it won't tell you
+      which of two very different problems you have: the game genuinely got worse, or the mix of
+      who bothers to review shifted toward complaint. Those need opposite responses, and a trend
+      line can't separate them. Review text can — but at hundreds of thousands of reviews nobody
+      reads it, and a word cloud isn't an answer.
+    </p>
+    <p>
+      REDLINE is built to get from a rating movement to a specific, attributable cause, and then
+      down to the raw player quotes behind it.
+    </p>
+
+    <h2>Overview — the thesis stated up front</h2>
+
+    <figure>
+      <img src="assets/img/redline-overview.png" alt="REDLINE overview page: KPI ribbon, a sentiment index gauge, a monthly lap chart trending down, and a theme read.">
+      <figcaption>Sentiment index, the monthly &ldquo;lap chart,&rdquo; and a first read on which themes carry the damage.</figcaption>
+    </figure>
+
+    <p>
+      The page opens on the conclusion rather than making the reader assemble it: sentiment has
+      slipped 0.74&#9733; since 2021, and quality complaints, not content, are the drag. Everything
+      after it is the evidence for that one line. The sentiment index sits at 3.77 against a 4.09
+      peak; five of twelve themes score below 3.5&#9733;, and they're the technical ones &mdash;
+      bugs, performance, storage, monetisation.
+    </p>
+
+    <h2>Market position — reach and reception pull apart</h2>
+
+    <figure>
+      <img src="assets/img/redline-market.png" alt="Market position page: per-title store stats, a reach-versus-reception scatter, rating-mix rings, and engagement rate.">
+      <figcaption>Installs against store rating, bubble sized by written reviews. The biggest title isn't the best-loved.</figcaption>
+    </figure>
+
+    <p>
+      Each title occupies a distinct spot: Asphalt rates highest (4.27) on the smaller reach, NFS
+      has the largest install base (308M) at a middling 3.79, and ZingSpeed rates worst (3.14) but
+      is by far the loudest. That last point needs a caveat rather than a conclusion, and it's the
+      one methodological trap on the whole project &mdash; see below.
+    </p>
+
+    <h2>Player sentiment — the shape of the decline</h2>
+
+    <figure>
+      <img src="assets/img/redline-sentiment.png" alt="Player sentiment page: a 1-5 star distribution, a migration chart of score bands by year, and a theme-by-title score matrix.">
+      <figcaption>The distribution is barbell-shaped, and the 5&#9733; column is emptying into the 1&#9733; one.</figcaption>
+    </figure>
+
+    <p>
+      Sentiment here isn't normally distributed &mdash; 82.5% of reviews sit at 1&#9733; or 5&#9733;
+      and almost nobody lands in the middle, so an average is close to meaningless on its own. What
+      moves is the mix: the 1&#9733; share doubles from 15.7% to 31.7% while the 2&ndash;4&#9733;
+      middle barely changes. The story is 5&#9733; reviews migrating to 1&#9733;, not a gentle
+      slide.
+    </p>
+    <p>
+      The theme-by-title matrix is where each game's problem localises. Asphalt is healthy &mdash;
+      only monetisation (2.84&#9733;) draws real complaint. NFS has a game-experience problem &mdash;
+      gameplay and monetisation are its weakest. ZingSpeed is a technical collapse, with bugs,
+      storage and performance making up 46% of its sample.
+    </p>
+
+    <h2>Sentiment drivers</h2>
+
+    <figure>
+      <img src="assets/img/redline-drivers.png" alt="Sentiment drivers page: a decomposition of the score change into quality and composition, a bridge waterfall by theme, and a driver table.">
+      <figcaption>The &minus;0.74&#9733; drop, split into how much is real decline and how much is complaint crowding out praise.</figcaption>
+    </figure>
+
+    <p>
+      This is the analytical core. The &minus;0.74&#9733; is decomposed two ways at once. First,
+      <strong>quality versus composition</strong>: 65% of the drop (&minus;0.48) is themes actually
+      scoring lower than before, and 35% (&minus;0.26) is the conversation shifting &mdash; complaint
+      crowding out praise. That single split is the answer to the opening question, and it says the
+      decline is mostly real, not mostly noise.
+    </p>
+    <p>
+      Second, a <strong>bridge</strong> attributes the movement to individual themes, and the twelve
+      effects sum to the total change exactly. Bugs &amp; Errors is the largest single driver at
+      &minus;0.21&#9733;, both talked about more (share 8.7%&rarr;16.0%) and scored worse
+      (2.58&rarr;1.93&#9733;). Each theme's effect is its share change times its distance from the
+      baseline mean, plus its own score change weighted by current share. That the parts reconcile
+      to the whole is the property that makes the page trustworthy rather than suggestive.
+    </p>
+    <p class="note">
+      Several themes carry fewer than 25 reviews in the current period &mdash; the report flags
+      those inline and says to read them with caution, rather than quietly letting a thin cell drive
+      a conclusion.
+    </p>
+
+    <h2>Verbatim explorer — down to the evidence</h2>
+
+    <figure>
+      <img src="assets/img/redline-verbatim.png" alt="Verbatim explorer page: a reading pane, a rating filter, and a sortable table of individual reviews ranked by helpful votes.">
+      <figcaption>Every aggregate stays one click from the raw review. Sort, filter by rating, read the actual Vietnamese.</figcaption>
+    </figure>
+
+    <p>
+      The last page closes the loop from aggregate back to source. Reviews are ranked by how many
+      players marked them helpful, filterable by rating and theme, readable in full in the original
+      Vietnamese. An analysis of review text that you can't trace back to review text is just a
+      claim; this is the part that lets someone check mine.
+    </p>
+    <p class="note">
+      417 reviews flagged for explicit language are suppressed from the readable table but remain in
+      every metric &mdash; hidden from display, never dropped from the maths.
+    </p>
+
+  </div>
+
+  <div class="col">
+
+    <h2>How it's built</h2>
+    <p>
+      A Python notebook scrapes the Vietnamese-language review history for all three titles, then
+      draws a stratified sample by month and star rating so each title's sample
+      mirrors its own distribution over time. Reviews are classified into twelve themes with SetFit
+      &mdash; few-shot classification that fine-tunes a multilingual sentence transformer on around
+      1,000 hand-labelled examples. Few-shot was the right trade: labelling a thousand reviews is an
+      afternoon, and zero-shot on informal, code-switched Vietnamese wasn't accurate enough to
+      publish a number from.
+    </p>
+    <p>
+      The Power BI rebuild was done with Claude Code driving Power BI Desktop through its modelling
+      bridge &mdash; model cleanup, DAX, and report build under my direction, with the analytical
+      decisions and the design standard mine. The full setup is documented in the repo.
+      <a href="https://github.com/GemmyNguyen/redline-player-sentiment/blob/main/docs/claude-code-powerbi-setup-guide.md"
+         target="_blank" 
+         rel="noopener noreferrer">setup guide</a>.
+    </p>
+
+    <h2>Reading it correctly — two rules</h2>
+    <ul>
+      <li><strong>Compare percentages within a title, never counts across titles.</strong> The
+        sample is a fixed sample size per game, so absolute theme counts between games are an artifact of
+        the sampling, not the data. The month &times; score stratification means a title's own theme
+        percentages are faithful; that's what's safe to compare.</li>
+      <li><strong>ZingSpeed's loudness is a filter effect, not a behaviour.</strong> Scraping is
+        Vietnamese-only. ZingSpeed is a local title whose players are almost all Vietnamese, so
+        nearly all its reviews are captured; Asphalt and NFS are global games whose Vietnamese
+        reviews are a slice of a much larger whole.
+      </li>
+    </ul>
+
+    <h2>Limitations</h2>
+    <ul>
+      <li><strong>One theme per review.</strong> The classifier assigns a single dominant theme, but
+        real reviews are mixed &mdash; &ldquo;great graphics, terrible lag&rdquo; is one review with
+        two opinions. Aspect-based sentiment analysis would split them, and it's the clear next step.</li>
+      <li><strong>Directional, not precise.</strong> Roughly 100&ndash;200 reviews per title per
+        quarter supports reading a direction, not quoting a figure to the decimal. The drivers page
+        flags thin cells for this reason.</li>
+      <li><strong>Reviewers aren't players.</strong> People who write reviews self-select to the
+        extremes &mdash; the 82.5% sitting at 1&#9733; or 5&#9733; is that effect in the data. This
+        measures the vocal end of each community.</li>
+    </ul>
+
+    <h2>Everything is open</h2>
+    <p>
+      Public data, no client involvement, nothing withheld: the scraping and classification
+      notebook, the raw extract, the <code>.pbix</code> with the full model and every measure, and
+      the live report.
+      <a href="https://github.com/GemmyNguyen/redline-player-sentiment"
+         target="_blank" 
+         rel="noopener noreferrer">Repository on GitHub &rarr;</a>
+    </p>
+    <p class="note">
+      Independent portfolio exercise using publicly available Google Play data. Analysis is for
+      demonstration only and does not represent the views of Gameloft SE, VNG Corporation or
+      Electronic Arts.
+    </p>
+
+  </div>
+
+</main>
+
+<footer class="foot">
+  <a href="index.html">&larr; All work</a>
+  <span>Gemmy Nguyen &middot; Ho Chi Minh City</span>
+</footer>
+
+</body>
+</html>

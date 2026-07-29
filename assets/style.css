@@ -1,0 +1,336 @@
+/* ==========================================================================
+   Gemmy Nguyen — portfolio
+   One stylesheet for every page. Edit tokens below to change the whole site.
+   ========================================================================== */
+
+:root {
+  --paper:     #FBFAF7;
+  --ink:       #14110F;
+  --ink-soft:  #5C5754;
+  --coral:     #D9483B;
+  --rule:      #E2DCD4;
+  --wash:      #F3EFE9;
+
+  --serif: Georgia, "Times New Roman", serif;
+  --mono:  ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --measure: 40rem;   /* prose width  */
+  --wide:    58rem;   /* figure width */
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  padding: 0 1.5rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  text-rendering: optimizeLegibility;
+}
+
+/* --- Layout ------------------------------------------------------------- */
+
+.wrap { max-width: var(--wide); margin: 0 auto; }
+.col  { max-width: var(--measure); }
+
+main { padding-bottom: 6rem; }
+
+/* --- Masthead ----------------------------------------------------------- */
+
+.masthead {
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: 2.5rem 0 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--rule);
+}
+
+.masthead .name {
+  font-size: 1.0625rem;
+  font-weight: normal;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.masthead .name a { color: var(--ink); text-decoration: none; border: 0; }
+
+.masthead nav {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  gap: 1.75rem;
+}
+
+/* --- Type --------------------------------------------------------------- */
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.15;
+  font-weight: normal;
+  letter-spacing: -0.015em;
+  margin: 3rem 0 1.25rem;
+}
+
+h2 {
+  font-size: 1.375rem;
+  font-weight: normal;
+  line-height: 1.3;
+  margin: 3.5rem 0 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 2rem 0 0.5rem;
+}
+
+p { margin: 0 0 1.25rem; }
+
+.lede {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin: 0 0 0.75rem;
+}
+
+a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--coral);
+  padding-bottom: 0.5px;
+  transition: background-color 0.15s ease;
+}
+
+a:hover { background: var(--wash); }
+
+a:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 3px;
+  background: none;
+}
+
+ul { padding-left: 1.1rem; margin: 0 0 1.25rem; }
+li { margin-bottom: 0.5rem; }
+
+strong { font-weight: bold; }
+
+/* --- Spec block: the mono fact table at the top of each project ---------- */
+
+.spec {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  padding: 1rem 0 1.1rem;
+  margin: 0 0 2.5rem;
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.35rem 1.5rem;
+}
+
+.spec dt { color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.6875rem; padding-top: 0.15rem; }
+.spec dd { margin: 0; }
+
+/* --- Project list on the home page -------------------------------------- */
+
+.project-list { margin-top: 1rem; }
+
+.project {
+  border-top: 1px solid var(--rule);
+  padding: 2.5rem 0;
+  display: grid;
+  grid-template-columns: 21rem 1fr;
+  gap: 0 2.75rem;
+  align-items: start;
+}
+
+.project .shot {
+  grid-column: 2;
+  grid-row: 1 / span 5;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: none;
+  align-self: start;
+}
+
+.project .shot:hover { background: none; }
+
+.project .shot img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--rule);
+  transition: border-color 0.18s ease;
+}
+
+.project:hover .shot img { border-color: var(--coral); }
+
+.project h2 {
+  border: 0;
+  padding: 0;
+  margin: -0.35rem 0 0.5rem;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  grid-column: 1;
+}
+
+.project h2 a { border-bottom-width: 2px; }
+
+.project .meta {
+  grid-column: 1;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 0.9rem;
+}
+
+.project p:not(.meta):not(.more) {
+  grid-column: 1;
+  font-size: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.more {
+  grid-column: 1;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0.35rem 0 0;
+}
+
+/* --- Embedded Power BI report ------------------------------------------- */
+
+.report {
+  max-width: var(--wide);
+  position: relative;
+  padding-bottom: 60%;      /* 16:9 canvas + Power BI's bottom nav bar      */
+  height: 0;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--wash);
+  margin: 1.5rem 0 0.6rem;
+}
+
+.report iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+figure { margin: 1.75rem 0; max-width: var(--wide); }
+
+figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--rule);
+}
+
+figcaption,
+.caption {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-top: 0.6rem;
+}
+
+/* --- Code --------------------------------------------------------------- */
+
+pre {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  background: var(--wash);
+  border-left: 2px solid var(--coral);
+  padding: 1rem 1.15rem;
+  overflow-x: auto;
+  margin: 0 0 0.6rem;
+  max-width: var(--wide);
+}
+
+code { font-family: var(--mono); font-size: 0.9em; }
+p code, li code { background: var(--wash); padding: 0.1em 0.35em; }
+
+/* --- Note callout ------------------------------------------------------- */
+
+.note {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--rule);
+  padding: 0.15rem 0 0.15rem 1rem;
+  margin: 0 0 1.5rem;
+}
+
+/* --- Footer ------------------------------------------------------------- */
+
+.foot {
+  max-width: var(--wide);
+  margin: 0 auto;
+  border-top: 1px solid var(--rule);
+  padding: 1.75rem 0 3rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.75rem;
+}
+
+/* --- Small screens ------------------------------------------------------ */
+
+@media (max-width: 52rem) {
+  .project {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .project .shot { grid-column: 1; grid-row: 1; margin-bottom: 1.25rem; }
+  .project h2, .project .meta, .project p, .project .more { grid-column: 1; }
+  .project h2 { margin-top: 0; }
+}
+
+@media (max-width: 40rem) {
+  body { padding: 0 1.15rem; font-size: 1rem; }
+  h1 { font-size: 1.875rem; margin-top: 2.25rem; }
+  .lede { font-size: 1.125rem; }
+  .spec { grid-template-columns: 1fr; gap: 0 0; }
+  .spec dt { padding-top: 0.7rem; }
+  .spec dd { margin-bottom: 0.1rem; }
+  .report { padding-bottom: 75%; }
+  .masthead { padding-top: 1.75rem; }
+  .masthead nav { gap: 1.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

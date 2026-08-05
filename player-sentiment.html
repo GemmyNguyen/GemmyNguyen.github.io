@@ -45,7 +45,7 @@
     <dt>Method</dt>   <dd>SetFit few-shot classification, multilingual base, 12 themes</dd>
     <dt>Stack</dt>    <dd>Python, Power BI, DAX, Deneb/Vega</dd>
     <dt>Titles</dt>   <dd>Asphalt Legends Unite &middot; Need for Speed No Limits &middot; ZingSpeed Mobile</dd>
-    <dt>Code</dt>     <dd>Fully open &mdash; notebook, data and .pbix on GitHub</dd>
+    <dt>Code</dt>     <dd>Fully open &mdash; notebook, data and .pbip on GitHub</dd>
   </dl>
 
   <h2>The report</h2>
@@ -89,10 +89,10 @@
 
     <p>
       The page opens on the conclusion rather than making the reader assemble it: sentiment has
-      slipped 0.74&#9733; since 2021, and quality complaints, not content, are the drag. Everything
-      after it is the evidence for that one line. The sentiment index sits at 3.77 against a 4.09
-      peak; five of twelve themes score below 3.5&#9733;, and they're the technical ones &mdash;
-      bugs, performance, storage, monetisation.
+      slipped 0.74&#9733; since 2021, and the drag looks like quality complaints rather than
+      content &mdash; a read the later pages test rather than assert. The sentiment index sits at
+      3.77 against a 4.09 peak; five of twelve themes score below 3.5&#9733;, and they're the
+      technical ones &mdash; bugs, performance, storage, monetisation.
     </p>
 
     <h2>Market position — reach and reception pull apart</h2>
@@ -152,28 +152,50 @@
       baseline mean, plus its own score change weighted by current share. That the parts reconcile
       to the whole is the property that makes the page trustworthy rather than suggestive.
     </p>
+    <p>
+      There's an obvious objection to the quality read: maybe the rating didn't fall because the
+      games got worse, but because players simply got harsher. The theme pattern is what tests it.
+      A tougher crowd would rate <em>everything</em> lower &mdash; the harshness would show up across
+      all themes. It doesn't. The decline concentrates in the technical themes (bugs, performance,
+      storage) while graphics and gameplay hold. Selective decline points to a real problem in
+      specific areas, not a uniformly stricter audience.
+    </p>
     <p class="note">
-      Several themes carry fewer than 25 reviews in the current period &mdash; the report flags
-      those inline and says to read them with caution, rather than quietly letting a thin cell drive
-      a conclusion.
+      What this can't do is separate falling quality from <em>rising expectations within</em> those
+      technical themes &mdash; players in 2025 may simply tolerate a bug less than in 2021, at an
+      identical bug. Reading the review text for severity over time would be the next cut. And
+      several themes carry fewer than 25 reviews in the current period; the report flags those inline
+      rather than letting a thin cell drive a conclusion.
     </p>
 
-    <h2>Verbatim explorer — down to the evidence</h2>
+    <h2>What players ask for — and who's still worth keeping</h2>
 
     <figure>
-      <img src="assets/img/redline-verbatim.png" alt="Verbatim explorer page: a reading pane, a rating filter, and a sortable table of individual reviews ranked by helpful votes.">
-      <figcaption>Every aggregate stays one click from the raw review. Sort, filter by rating, read the actual Vietnamese.</figcaption>
+      <img src="assets/img/redline-asks.png" alt="Verbatim explorer page: what-players-ask-for panel ranking themes by explicit request volume, a reading pane, and a sortable evidence table of individual reviews.">
+      <figcaption>Explicit requests ranked by theme, and how the players making them rate that theme versus everyone else.</figcaption>
     </figure>
 
     <p>
-      The last page closes the loop from aggregate back to source. Reviews are ranked by how many
-      players marked them helpful, filterable by rating and theme, readable in full in the original
-      Vietnamese. An analysis of review text that you can't trace back to review text is just a
-      claim; this is the part that lets someone check mine.
+      The final page separates complaint from request. Filtering reviews for explicit asks
+      (<em>mong, n&ecirc;n, th&ecirc;m, xin</em> &mdash; hoping, should, add, please), the most
+      requested change isn't gameplay or monetisation. It's a smaller install: Device &amp; Storage
+      draws 353 asks, more than the next two themes combined. Bugs &amp; Errors follows at 193.
+    </p>
+    <p>
+      The part I didn't expect sits in the same panel. For each theme I compared how the players
+      <em>making a request</em> rate it against everyone else. They rate it higher &mdash; and Bugs
+      &amp; Errors is the clearest case: the worst-scoring theme in the whole report at 2.12&#9733;,
+      yet the players asking for a fix rate it 0.63&#9733; above the ones who just complain. A
+      request is a signal someone still intends to play; a 1&#9733; with no ask is someone already
+      gone. That reframes the low scores from a list of what's broken into a shortlist of where the
+      salvageable players are telling you what would keep them.
     </p>
     <p class="note">
-      417 reviews flagged for explicit language are suppressed from the readable table but remain in
-      every metric &mdash; hidden from display, never dropped from the maths.
+      Read the high-volume themes here, not the thin ones &mdash; Device &amp; Storage (353) and
+      Bugs (193) carry the finding; themes with only 20&ndash;25 asks are directional at best. And
+      every aggregate stays one click from the raw review: the evidence table ranks reviews by
+      helpful votes, filterable by rating and theme, readable in full in the original Vietnamese.
+      417 reviews flagged for explicit language are hidden from the table but remain in every metric.
     </p>
 
   </div>
@@ -223,13 +245,17 @@
       <li><strong>Reviewers aren't players.</strong> People who write reviews self-select to the
         extremes &mdash; the 82.5% sitting at 1&#9733; or 5&#9733; is that effect in the data. This
         measures the vocal end of each community.</li>
+      <li><strong>Classification is few-shot, not gold-standard.</strong> The theme and
+        request labels come from a model trained on ~1,000 examples, good enough to read direction
+        and rank themes, but not audited to a fixed accuracy. Treat the findings as well-supported
+        signals, not precise measurements.</li>
     </ul>
 
     <h2>Everything is open</h2>
     <p>
       Public data, no client involvement, nothing withheld: the scraping and classification
-      notebook, the raw extract, the <code>.pbix</code> with the full model and every measure, and
-      the live report.
+      notebook, the raw extract, the <code>.pbip</code> project with the full model and every
+      measure, and the live report.
       <a href="https://github.com/GemmyNguyen/redline-player-sentiment"
          target="_blank" 
          rel="noopener noreferrer">Repository on GitHub &rarr;</a>

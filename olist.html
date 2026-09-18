@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olist Commerce Explorer &middot; Ask the data &middot; Gemmy Nguyen</title>
+<meta name="description" content="An end-to-end Microsoft Fabric build — lakehouse to semantic model to Power BI — with a natural-language layer that writes its own T-SQL and shows every query it runs.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <p class="name"><a href="index.html">Giao Nguyen (Gemmy Nguyen)</a></p>
+  <nav>
+    <a href="index.html#work">Work</a>
+    <a href="index.html#about">About</a>
+    <a href="https://www.linkedin.com/in/giao-nguyen-541944178/"
+       target="_blank" 
+       rel="noopener noreferrer">LinkedIn</a>
+    <a href="https://github.com/GemmyNguyen"
+       target="_blank" 
+       rel="noopener noreferrer">GitHub</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <div class="col">
+    <p class="eyebrow" style="margin-top:3rem;">Project &middot; Olist Commerce Explorer</p>
+    <h1 style="margin-top:0;">Natural language over a warehouse. Can you trust what it tells you?</h1>
+    <p class="lede">
+      An end-to-end Microsoft Fabric build &mdash; raw CSVs through to a Power BI report &mdash;
+      with a chat layer that writes its own T-SQL against the gold tables. It answered one
+      question confidently and wrongly. This is how that was caught, and what it changed.
+    </p>
+  </div>
+
+  <dl class="spec">
+    <dt>Build</dt>    <dd>Lakehouse &rarr; Warehouse &rarr; semantic model &rarr; report, plus a natural-language Q&amp;A layer</dd>
+    <dt>Role</dt>     <dd>Sole build &mdash; pipeline, model, report, app</dd>
+    <dt>Source</dt>   <dd>Olist Brazilian e-commerce, public</dd>
+    <dt>Scale</dt>    <dd>96,478 delivered orders &middot; 93,358 customers &middot; R$13.2M</dd>
+    <dt>Period</dt>   <dd>2016 &ndash; 2018</dd>
+    <dt>Pipeline</dt> <dd>Bronze files &rarr; Delta tables &rarr; silver views and gold tables in T-SQL</dd>
+    <dt>Model</dt>    <dd>Direct Lake star schema &mdash; two facts, three dimensions</dd>
+    <dt>Report</dt>   <dd>Two pages &mdash; customers and retention, basket and categories</dd>
+    <dt>AI layer</dt> <dd>Streamlit + Claude Sonnet &mdash; writes T-SQL, runs it, answers from the rows</dd>
+    <dt>Auth</dt>     <dd>Microsoft Entra service principal to the Warehouse SQL endpoint</dd>
+    <dt>Stack</dt>    <dd>Microsoft Fabric, Power BI, T-SQL, DAX, Python, Streamlit, Anthropic API</dd>
+  </dl>
+
+  <h2>The demo</h2>
+
+  <div class="report" style="padding-bottom:56.25%;">
+    <video controls preload="metadata"
+           poster="assets/img/olist-demo-poster.png"
+           style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#071216;">
+      <source src="assets/olist-ask-the-data.mp4" type="video/mp4">
+      Your browser can't play this video.
+      <a href="assets/olist-ask-the-data.mp4">Download the MP4</a> instead.
+    </video>
+  </div>
+  <p class="caption">
+    Sixty-five seconds: the report, a question asked in plain English, the SQL it wrote, and the
+    architecture underneath. Captions are burned in &mdash; sound is optional.
+  </p>
+
+  <div class="col">
+
+    <h2>The question</h2>
+    <p>
+      A report is built to answer a defined set of questions well, and to keep answering them the
+      same way every week. That is the job of the overview layer, and it is worth protecting: when
+      the headline numbers are settled, nobody spends the first ten minutes of a meeting arguing
+      about them.
+    </p>
+    <p>
+      The questions that come <em>after</em> the overview are a different shape. They are specific,
+      they are usually asked once &mdash; did the customers who waited longest come back? &mdash;
+      and none of them justifies a new page. The honest answer has always been: give me a day and
+      I will write the query.
+    </p>
+    <p>
+      So this project adds a second way in beside the report rather than instead of it. The
+      dashboard carries the shared picture; the Q&amp;A layer takes the deep-dive that follows from
+      it. The one condition I would not give up is that the query has to be visible. A number you
+      cannot trace is not an answer, it is a suggestion.
+    </p>
+
+    <h2>The pipeline</h2>
+    <p>
+      Nine raw CSVs land in a lakehouse Files folder, untouched &mdash; nothing cleaned, nothing
+      renamed. Keeping the landing raw is what makes everything downstream reproducible: if a
+      transform is wrong, I rerun from there rather than re-downloading. They are converted to
+      Delta tables, at which point the data stops being files and starts being queryable.
+    </p>
+    <p class="note">
+      One thing worth knowing if you try this: a CSV usually converts to Delta in seconds, but not
+      if it contains free text. The review file has commas inside the review bodies and will not
+      load cleanly. That needs a Spark notebook or a Dataflow first &mdash; I used a Dataflow,
+      being more at home in M query.
+    </p>
+    <p>
+      In the Warehouse, silver is views rather than tables: type casts, date parsing, the joins
+      between orders and items. The boring correctness work, done once, in one place, so it cannot
+      drift between reports. Gold is five tables shaped for questions rather than for storage
+      &mdash; two facts and three dimensions.
+    </p>
+    <p>
+      The split between the two facts is the most important decision in the model.
+      <code>fact_order_items</code> is one row per line item; <code>fact_order_delivery</code> is
+      one row per order. Delivery days and review scores live at order grain. Average them off the
+      item table and every order containing three items counts three times &mdash; the number looks
+      perfectly reasonable and is quietly wrong. Everything else in this project is downstream of
+      getting that right.
+    </p>
+
+    <h2>The report</h2>
+
+    <p>
+      Two pages on a Direct Lake semantic model over the gold layer. One direction of filtering,
+      measures defined once.
+    </p>
+
+    <figure>
+      <img src="assets/img/olist-report.png" alt="The Commerce Explorer report page: revenue, orders, customers and repeat rate, a state map, a cohort retention matrix and a new-versus-returning revenue chart.">
+      <figcaption>Page one &mdash; who buys, and whether they come back: revenue, orders, customers and repeat rate, a state map, cohort retention and new-versus-returning revenue.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="assets/img/olist-report-basket.png" alt="The Commerce Explorer basket and category page: category revenue ranking, average basket value, items per order and payment mix.">
+      <figcaption>Page two &mdash; what goes in the basket: category ranking, basket value, items per order and payment mix.</figcaption>
+    </figure>
+
+    <p class="note">
+      No live report link here, unlike the other write-ups: the capacity behind it is a Fabric
+      trial, and publishing to the web needs a paid one kept running. These are screenshots of the
+      working report.
+    </p>
+
+    <h2>The Q&amp;A layer</h2>
+
+    <figure>
+      <img src="assets/img/olist-app.png" alt="The ask-the-data app: the Power BI report embedded at the top, a question box underneath, and a conversation history rail on the left.">
+      <figcaption>The report hosted inside the app, with the question box under it. Same data, two ways in.</figcaption>
+    </figure>
+
+    <p>
+      Ask a question in English. The model writes T-SQL, the app runs it against the Warehouse SQL
+      endpoint, and the rows that come back are fed to the model to phrase an answer &mdash; with a
+      chart when a picture carries the finding better than a sentence.
+    </p>
+    <p>
+      <strong>The design decision I would defend:</strong> the chat layer queries the gold tables
+      directly over SQL, not the semantic model. An LLM writes reliable SQL against a small,
+      well-described schema. Asking it to navigate DAX and relationships is a harder problem for no
+      extra benefit, and the schema is compact enough to state completely in the prompt &mdash;
+      including the grain of every table and the rule for crossing between them. That prompt is
+      most of the reason the answers hold up.
+    </p>
+    <p class="note">
+      This started as an attempt to use Power BI's own Copilot, which does exactly this natively.
+      It needs a paid Fabric capacity &mdash; F2 or above &mdash; or Premium P1+; trial capacities
+      are not supported. Mine is a trial, so the Q&amp;A layer is an app rather than a pane.
+    </p>
+
+    <h2>Every query is on screen</h2>
+
+    <figure>
+      <img src="assets/img/olist-sql.png" alt="An expanded SQL panel showing the generated T-SQL and the rows it returned, month by month.">
+      <figcaption>The generated SQL and its result set, expandable on every answer.</figcaption>
+    </figure>
+
+    <p>
+      This is the part I care about more than the chat. Every query the model writes is displayed
+      with the rows it returned, including the failed attempts. A text-to-SQL tool you cannot audit
+      is a liability rather than a feature &mdash; and the next section is why that is not a
+      rhetorical point.
+    </p>
+    <p>
+      Guardrails sit underneath it: generated SQL is parsed and rejected unless it is a single
+      <code>SELECT</code>, results are capped, errors go back to the model with the remaining
+      attempt budget attached, and a repeated error is called out as a repeat so the model changes
+      approach instead of resubmitting a cosmetic variation.
+    </p>
+
+    <h2>Where it got it wrong</h2>
+    <p>
+      Asked whether late delivery had hurt repeat purchasing, the model compared customers in
+      states with high late-delivery rates against everyone else: 2.9% versus 3.0%. Essentially no
+      difference. Well written, plausible, and wrong.
+    </p>
+    <p>
+      Living in a high-late state is not the same as having had a late delivery. Only about 6.5% of
+      orders arrive late, so both sides of that comparison are overwhelmingly people whose orders
+      turned up on time, and the effect washes out. Condition on the customer's <em>own</em> first
+      order instead and it is 2.70% against 3.52% &mdash; about 23% lower, on 5,565 and 69,286
+      customers, and statistically significant.
+    </p>
+
+    <figure>
+      <img src="assets/img/olist-answer.png" alt="The corrected answer: repeat rate 2.70% for customers whose first order arrived late versus 3.52% for those whose didn't, followed by two methodology notes.">
+      <figcaption>The corrected answer &mdash; and, below it, the two methodology choices it made to get there.</figcaption>
+    </figure>
+
+    <p>
+      A second run turned up a subtler one. Two runs returned exactly the same 74,851 customers but
+      different repeat rates &mdash; 3.75% and 3.52%. One had averaged over order <em>items</em>,
+      so a first order containing three items counted three times. There is a general tell in that,
+      and it is now written into the prompt: if a query needs <code>COUNT(DISTINCT ...)</code> to
+      count correctly, then <code>AVG()</code> over those same rows is wrong. They cannot both be
+      right in one <code>SELECT</code>.
+    </p>
+    <p>
+      Neither was catchable without reading the SQL. That is the whole argument for building it
+      this way, and I would rather demonstrate it with a real failure than assert it.
+    </p>
+
+    <h2>What I changed &mdash; and what I deliberately didn't</h2>
+    <p>
+      The instinct is to make the prompt prescriptive: write down the right query for every
+      question and the variation stops. I did not do that, because the run that needed a follow-up
+      from me is the run that found the real story &mdash; that delivery times were getting
+      <em>faster</em> (9.2 to 7.7 days) while the promised window shrank faster still (28 to 16).
+      Not a carrier problem, an estimate problem. A rigid prompt would have cost me that.
+    </p>
+    <p>
+      So the rules I added constrain which comparison is <em>valid</em>, not which query to write:
+    </p>
+    <ul>
+      <li><strong>Attach the condition to the individual, not their region.</strong> A regional cut
+        dilutes an effect toward nothing when the condition is rare.</li>
+      <li><strong>Say what one row is before you average it.</strong> Customer attributes are
+        averaged over one row per customer, not per item.</li>
+      <li><strong>Condition on the first order, not on ever.</strong> Customers with more orders
+        have more chances to receive a late one, which reverses the correlation.</li>
+      <li><strong>Leave runway before the data ends.</strong> Someone who bought last month has not
+        had time to come back.</li>
+      <li><strong>Where two queries could both be right, pick one and write it down</strong> &mdash;
+        what counts as an order, how nulls are handled, what &ldquo;top&rdquo; means, how ties
+        break. This is what holds the numbers steady between runs.</li>
+    </ul>
+
+    <h2>How it's built</h2>
+    <p>
+      Fabric's SQL endpoint has no SQL authentication &mdash; it is Microsoft Entra or nothing. The
+      app connects as a service principal over ODBC, with one wrinkle worth recording: connecting
+      to the SQL endpoint does not by itself mint the token, so a Fabric REST call has to happen
+      first or the login fails with a misleading error.
+    </p>
+    <p>
+      The conversation runs as a tool-use loop &mdash; the model is given a <code>run_sql</code>
+      tool and a <code>plot</code> tool, and iterates until it has an answer or exhausts its
+      budget. Charts are a closed specification the model fills in rather than code it writes, so a
+      chart can fail validation without breaking the page.
+    </p>
+    <p>
+      The parts that took longest were not the interesting ones: making sure a turn can never end
+      with nothing on screen, that a half-written tool call is never left dangling, and that a
+      currency figure like R$953K is escaped before rendering rather than being silently parsed as
+      LaTeX. The message bookkeeping has its own offline test suite that runs the whole control
+      flow against a fake client.
+    </p>
+
+    <h2>Limitations</h2>
+    <ul>
+      <li><strong>The wording varies between runs.</strong> This API generation removed temperature
+        and the other sampling controls, so identical questions can be phrased differently. The
+        <em>numbers</em> are held steady by the consistency rules above, which is the part that
+        matters; the prose is not.</li>
+      <li><strong>The schema is stated, not discovered.</strong> Five tables are small enough to
+        describe completely in a prompt. This approach would need rethinking at fifty.</li>
+      <li><strong>It can still be wrong.</strong> The rules close the failure modes I found by
+        testing. They do not close the ones I haven't hit yet, which is why the SQL stays on
+        screen.</li>
+      <li><strong>Public data, no client context.</strong> Olist is a marketplace where most
+        purchases are one-off or gifts, so the repeat rate is around 3% across the board. The
+        relative effects are real; the absolute levels are specific to this business.</li>
+    </ul>
+
+    <h2>Why it isn't published</h2>
+    <p>
+      The app runs locally rather than on a public URL, deliberately. A published link would let
+      anyone spend my Anthropic credits, and the demo keeps the live Fabric connection rather than a
+      snapshot &mdash; which is the part worth showing. The video above is the whole thing running
+      against the real warehouse.
+    </p>
+    <p class="note">
+      Independent portfolio exercise on the public Olist Brazilian e-commerce dataset. Built
+      alongside preparation for DP-600, Microsoft's Fabric Analytics Engineer certification.
+    </p>
+
+  </div>
+
+</main>
+
+<footer class="foot">
+  <a href="index.html">&larr; All work</a>
+  <span>Gemmy Nguyen &middot; Ho Chi Minh City</span>
+</footer>
+
+</body>
+</html>
